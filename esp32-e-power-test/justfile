@@ -1,0 +1,9 @@
+compile: 
+	arduino-cli compile --fqbn DFRobot:esp32:esp32-e esp32-e-power-test.ino
+
+upload: 
+	arduino-cli upload -p /dev/cu.wchusbserial110 --fqbn DFRobot:esp32:esp32-e esp32-e-power-test.ino
+
+send: 
+	just compile
+	just upload
