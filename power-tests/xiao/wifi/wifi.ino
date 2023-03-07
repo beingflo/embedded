@@ -17,18 +17,25 @@ void initWiFi()
   Serial.println(WiFi.localIP());
 }
 
+double duration = 0;
+
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
+  unsigned long timeBegin = micros();
   Serial.begin(115200);
   initWiFi();
+
+  unsigned long timeEnd = micros();
+  unsigned long duration_long = timeEnd - timeBegin;
+  duration = (double)duration_long / 1000.0;
+
   Serial.print("RRSI: ");
   Serial.println(WiFi.RSSI());
 }
 
 void loop()
 {
-  digitalWrite(LED_BUILTIN, LOW);
+  delay(1000);
+  Serial.printf("Duration (ms): %f\n", duration);
   // initWiFi();
 }
