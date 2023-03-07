@@ -1,8 +1,8 @@
 #include "Arduino.h"
 #include <WiFi.h>
 
-const char *ssid = "IP a lot_EXT";
-const char *password = "pastis8015!";
+const char *ssid = "";
+const char *password = "";
 
 void initWiFi()
 {
