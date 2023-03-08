@@ -1,16 +1,18 @@
 #include <Arduino.h>
 
-void light_sleep_setup()
+void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(A5, OUTPUT);
 }
 
-void light_sleep_loop()
+void loop()
 {
-  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(A5, HIGH);
+  gpio_hold_en(GPIO_NUM_5);
   esp_sleep_enable_timer_wakeup(10000000);
   esp_light_sleep_start();
-  digitalWrite(LED_BUILTIN, LOW);
+  gpio_hold_dis(GPIO_NUM_5);
+  digitalWrite(A5, LOW);
   esp_sleep_enable_timer_wakeup(10000000);
   esp_light_sleep_start();
 }
