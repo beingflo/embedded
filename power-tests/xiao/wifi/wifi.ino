@@ -31,11 +31,13 @@ void setup()
 
   Serial.print("RRSI: ");
   Serial.println(WiFi.RSSI());
+  Serial.printf("Duration (ms): %f\n", duration);
 }
 
 void loop()
 {
   delay(1000);
-  Serial.printf("Duration (ms): %f\n", duration);
+  Serial.print("RRSI: ");
+  Serial.println(WiFi.RSSI());
   // initWiFi();
 }
