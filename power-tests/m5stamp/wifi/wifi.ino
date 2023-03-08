@@ -19,8 +19,8 @@ void initWiFi()
 
 void setup()
 {
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
+  pinMode(A5, OUTPUT);
+  digitalWrite(A5, HIGH);
   Serial.begin(115200);
   initWiFi();
   Serial.print("RRSI: ");
@@ -29,6 +29,6 @@ void setup()
 
 void loop()
 {
-  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(A5, LOW);
   // initWiFi();
 }

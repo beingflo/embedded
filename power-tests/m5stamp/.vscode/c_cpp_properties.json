@@ -215,6 +215,7 @@
                 "/Users/florian/Library/Arduino15/packages/esp32/hardware/esp32/2.0.7/tools/sdk/esp32c3/qio_qspi/include",
                 "/Users/florian/Library/Arduino15/packages/esp32/hardware/esp32/2.0.7/cores/esp32",
                 "/Users/florian/Library/Arduino15/packages/esp32/hardware/esp32/2.0.7/variants/esp32c3",
+                "/Users/florian/Library/Arduino15/packages/esp32/hardware/esp32/2.0.7/libraries/WiFi/src",
                 "/Users/florian/Library/Arduino15/packages/esp32/tools/riscv32-esp-elf-gcc/esp-2021r2-patch5-8.4.0/riscv32-esp-elf/include/c++/8.4.0",
                 "/Users/florian/Library/Arduino15/packages/esp32/tools/riscv32-esp-elf-gcc/esp-2021r2-patch5-8.4.0/riscv32-esp-elf/include/c++/8.4.0/riscv32-esp-elf",
                 "/Users/florian/Library/Arduino15/packages/esp32/tools/riscv32-esp-elf-gcc/esp-2021r2-patch5-8.4.0/riscv32-esp-elf/include/c++/8.4.0/backward",

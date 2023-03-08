@@ -5,13 +5,16 @@
 
 RTC_DATA_ATTR int value = 0;
 
-void deep_sleep_setup()
+void setup()
 {
+  pinMode(A5, OUTPUT);
+  digitalWrite(A5, HIGH);
+  delay(2000);
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
   esp_deep_sleep_start();
 }
 
-void deep_sleep_loop()
+void loop()
 {
   // This is not going to be called
 }
