@@ -1,7 +1,8 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-uint8_t receiver[] = {0x08, 0x3A, 0xF2, 0x14, 0x2A, 0x88};
+// ESP32-E
+uint8_t receiver[] = {0x24, 0x4C, 0xAB, 0x82, 0xF5, 0x0C};
 
 esp_now_peer_info_t peerInfo;
 
@@ -53,5 +54,4 @@ void loop()
     Serial.println("Error sending the data");
   }
   counter++;
-  delay(2000);
 }
