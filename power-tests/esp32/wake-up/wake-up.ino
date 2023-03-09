@@ -16,5 +16,4 @@ void setup()
 void loop()
 {
   // This is not going to be called
-  Serial.println(value);
 }
