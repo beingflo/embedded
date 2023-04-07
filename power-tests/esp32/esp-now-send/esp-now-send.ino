@@ -15,13 +15,13 @@ struct msg_data
 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 {
-  // Serial.print("\r\nLast Packet Send Status:\t");
-  // Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  Serial.print("\r\nLast Packet Send Status:\t");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
 
 void setup()
 {
-  // Serial.begin(115200);
+  Serial.begin(115200);
   WiFi.mode(WIFI_STA);
 
   if (esp_now_init() != ESP_OK)
@@ -50,7 +50,7 @@ void loop()
   int num_tries = 0;
   while (result != ESP_OK)
   {
-    // Serial.printf("Trying to print %d\n", counter);
+    Serial.printf("Trying to print %d\n", counter);
     num_tries += 1;
 
     struct msg_data data = {counter, num_tries};
@@ -59,11 +59,11 @@ void loop()
 
     if (result == ESP_OK)
     {
-      // Serial.println("Sent with success");
+      Serial.println("Sent with success");
     }
     else
     {
-      // Serial.println("Error sending the data");
+      Serial.println("Error sending the data");
     }
   }
 
