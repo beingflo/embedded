@@ -16,8 +16,7 @@ struct msg_data
 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 {
-  Serial.print("\r\nLast Packet Send Status: ");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Success" : "Fail");
 
   if (status == ESP_NOW_SEND_SUCCESS)
   {
@@ -48,18 +47,20 @@ void setup()
 
   if (esp_now_add_peer(&peerInfo) != ESP_OK)
   {
-    Serial.println("Failed to add peer");
+    Serial.println("Error adding peer");
     return;
   }
 
-  // Send message via ESP-NOW
   int num_tries = 0;
+
+  // Resend until data was received by recipient
   while (!success)
   {
     esp_err_t result = ESP_FAIL;
+
+    // Try sending until successfully sent
     while (result != ESP_OK)
     {
-      Serial.printf("Trying to print %d for the %d time\n", counter, num_tries);
       num_tries += 1;
 
       struct msg_data data = {counter, num_tries};
@@ -72,6 +73,7 @@ void setup()
       }
     }
 
+    // Allow time for callback to signal success
     delay(100);
   }
 
