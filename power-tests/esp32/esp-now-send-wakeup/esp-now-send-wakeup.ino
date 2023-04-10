@@ -1,5 +1,6 @@
 #include <esp_now.h>
 #include <WiFi.h>
+#include <esp_wifi.h>
 
 uint8_t receiver[] = {0x24, 0x4C, 0xAB, 0x82, 0xF5, 0x0C};
 
@@ -50,6 +51,12 @@ void setup()
     Serial.println("Error adding peer");
     return;
   }
+}
+
+void loop()
+{
+  esp_wifi_start();
+  WiFi.mode(WIFI_STA);
 
   int num_tries = 0;
 
@@ -70,6 +77,7 @@ void setup()
       if (result != ESP_OK)
       {
         Serial.println("Error sending the data");
+        break;
       }
     }
 
@@ -77,13 +85,11 @@ void setup()
     delay(100);
   }
 
+  success = 0;
   counter += 1;
 
+  esp_wifi_stop();
   esp_sleep_enable_timer_wakeup(1);
 
   esp_deep_sleep_start();
-}
-
-void loop()
-{
 }
