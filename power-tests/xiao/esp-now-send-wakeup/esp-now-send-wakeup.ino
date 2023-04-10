@@ -1,5 +1,6 @@
 #include <esp_now.h>
 #include <WiFi.h>
+#include <esp_wifi.h>
 
 uint8_t receiver[] = {0x24, 0x4C, 0xAB, 0x82, 0xF5, 0x0C};
 
@@ -16,8 +17,7 @@ struct msg_data
 
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 {
-  Serial.print("\r\nLast Packet Send Status: ");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Success" : "Fail");
 
   if (status == ESP_NOW_SEND_SUCCESS)
   {
@@ -28,6 +28,7 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
 void setup()
 {
   Serial.begin(115200);
+  Serial.setTxTimeoutMs(0);
   WiFi.mode(WIFI_STA);
 
   if (esp_now_init() != ESP_OK)
@@ -48,18 +49,26 @@ void setup()
 
   if (esp_now_add_peer(&peerInfo) != ESP_OK)
   {
-    Serial.println("Failed to add peer");
+    Serial.println("Error adding peer");
     return;
   }
+}
 
-  // Send message via ESP-NOW
+void loop()
+{
+  esp_wifi_start();
+  WiFi.mode(WIFI_STA);
+
   int num_tries = 0;
+
+  // Resend until data was received by recipient
   while (!success)
   {
     esp_err_t result = ESP_FAIL;
+
+    // Try sending until successfully sent
     while (result != ESP_OK)
     {
-      Serial.printf("Trying to print %d for the %d time\n", counter, num_tries);
       num_tries += 1;
 
       struct msg_data data = {counter, num_tries};
@@ -69,19 +78,19 @@ void setup()
       if (result != ESP_OK)
       {
         Serial.println("Error sending the data");
+        break;
       }
     }
 
+    // Allow time for callback to signal success
     delay(100);
   }
 
+  success = 0;
   counter += 1;
 
+  esp_wifi_stop();
   esp_sleep_enable_timer_wakeup(1);
 
-  esp_deep_sleep_start();
-}
-
-void loop()
-{
+  esp_light_sleep_start();
 }
