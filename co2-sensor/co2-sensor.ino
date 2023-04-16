@@ -9,7 +9,6 @@ RTC_DATA_ATTR int counter = 0;
 
 const char *ssid = "";
 const char *password = "";
-
 String endpoint = "";
 
 void connectWifi()
@@ -33,17 +32,20 @@ void connectSensor()
 
   while (airSensor.begin() == false)
   {
-    Serial.println("Air sensor not detected. Please check wiring. Freezing...");
+    Serial.println("Sensor not detected!");
     delay(1000);
   }
+  airSensor.setTemperatureOffset(1);
+
+  delay(1000);
 }
 
 void setup()
 {
   Serial.begin(115200);
 
-  connectWifi();
   connectSensor();
+  connectWifi();
 }
 
 void loop()
@@ -74,11 +76,15 @@ void loop()
     Serial.println("Waiting for new data");
   }
 
-  if (WiFi.status() == WL_CONNECTED)
+  if (WiFi.status() == WL_CONNECTED && co2 != 0)
   {
     HTTPClient http;
 
-    String body = "#TYPE rpi_home_co2 gauge\nrpi_home_co2 " + String(co2) + "\n";
+    String co2_prom = "#TYPE rpi_home_co2 gauge\nrpi_home_co2 " + String(co2) + "\n";
+    String hum_prom = "#TYPE rpi_home_humidity gauge\nrpi_home_humidity " + String(hum) + "\n";
+    String temp_prom = "#TYPE rpi_home_temperature gauge\nrpi_home_temperature " + String(temp) + "\n";
+
+    String body = co2_prom + hum_prom + temp_prom;
 
     http.begin(endpoint.c_str());
 
@@ -97,11 +103,13 @@ void loop()
 
     http.end();
   }
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.println("Wifi disconnected");
+    connectWifi();
+  }
 
   counter += 1;
 
-  delay(8000);
-  // esp_sleep_enable_timer_wakeup(1);
-  // Serial.println("Enter sleep");
-  // esp_deep_sleep_start();
+  delay(15000);
 }
