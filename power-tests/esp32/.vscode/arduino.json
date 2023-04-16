@@ -1,5 +1,5 @@
 {
-    "sketch": "ble-scan/ble-scan.ino",
+    "sketch": "ble-advertise/ble-advertise.ino",
     "configuration": "PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,LoopCore=1,EventsCore=1,DebugLevel=none",
     "board": "DFRobot:esp32:esp32",
     "port": "/dev/tty.wchusbserial120"
