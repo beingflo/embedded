@@ -35,7 +35,7 @@ void connectSensor()
     Serial.println("Sensor not detected!");
     delay(1000);
   }
-  airSensor.setTemperatureOffset(1);
+  airSensor.setTemperatureOffset(1.8);
 
   delay(1000);
 }
