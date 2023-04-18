@@ -2,6 +2,7 @@
 #include <HTTPClient.h>
 #include <Wire.h>
 #include "SparkFun_SCD30_Arduino_Library.h"
+#include "TM1637.h"
 
 SCD30 airSensor;
 
@@ -10,6 +11,11 @@ RTC_DATA_ATTR int counter = 0;
 const char *ssid = "";
 const char *password = "";
 String endpoint = "";
+
+const int CLK = D2;
+const int DIO = D3;
+
+TM1637 tm(CLK, DIO);
 
 void connectWifi()
 {
@@ -43,6 +49,8 @@ void connectSensor()
 void setup()
 {
   Serial.begin(115200);
+  tm.begin();
+  tm.setBrightness(2);
 
   connectSensor();
   connectWifi();
@@ -59,6 +67,8 @@ void loop()
     co2 = airSensor.getCO2();
     temp = airSensor.getTemperature();
     hum = airSensor.getHumidity();
+
+    tm.display(co2, true, true);
 
     Serial.print("co2(ppm):");
     Serial.print(co2);
