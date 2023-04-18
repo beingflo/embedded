@@ -1,6 +1,6 @@
 {
-    "sketch": "wifi-send-wakeup/wifi-send-wakeup.ino",
+    "sketch": "led-ampel/led-ampel.ino",
     "configuration": "CDCOnBoot=default,PartitionScheme=default,CPUFreq=160,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none,EraseFlash=none",
     "board": "esp32:esp32:XIAO_ESP32C3",
-    "port": "/dev/tty.usbmodem1101"
+    "port": "/dev/tty.usbmodem101"
 }
