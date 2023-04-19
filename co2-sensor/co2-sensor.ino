@@ -50,7 +50,7 @@ void setup()
 {
   Serial.begin(115200);
   tm.begin();
-  tm.setBrightness(2);
+  tm.setBrightness(1);
 
   connectSensor();
   connectWifi();
@@ -68,7 +68,12 @@ void loop()
     temp = airSensor.getTemperature();
     hum = airSensor.getHumidity();
 
-    tm.display(co2, true, true);
+    int offset = 1;
+    if (co2 >= 1000)
+    {
+      offset = 0;
+    }
+    tm.display(co2, true, false, offset);
 
     Serial.print("co2(ppm):");
     Serial.print(co2);
