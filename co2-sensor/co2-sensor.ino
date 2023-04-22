@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <Wire.h>
+#include <esp_now.h>
 #include "SparkFun_SCD30_Arduino_Library.h"
 #include "TM1637.h"
 
@@ -17,8 +18,27 @@ const int DIO = D3;
 
 TM1637 tm(CLK, DIO);
 
+struct msg_data
+{
+  float lux;
+  float temperature;
+  float humidity;
+  int num_tries;
+};
+
+struct msg_data data = {-5, -5, -5, 0};
+
+// callback function that will be executed when data is received
+void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
+{
+  memcpy(&data, incomingData, sizeof(msg_data));
+
+  Serial.printf("lux: %f, temperature: %f, humidity: %f, retries: %d\n", data.lux, data.temperature, data.humidity, data.num_tries);
+}
+
 void connectWifi()
 {
+  WiFi.mode(WIFI_AP_STA);
   WiFi.begin(ssid, password);
 
   Serial.println("Connecting");
@@ -30,6 +50,14 @@ void connectWifi()
 
   Serial.print("Connected!");
   Serial.println(WiFi.localIP());
+
+  if (esp_now_init() != ESP_OK)
+  {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
+
+  esp_now_register_recv_cb(OnDataRecv);
 }
 
 void connectSensor()
@@ -100,6 +128,17 @@ void loop()
     String temp_prom = "#TYPE rpi_home_temperature gauge\nrpi_home_temperature " + String(temp) + "\n";
 
     String body = co2_prom + hum_prom + temp_prom;
+
+    if (data.lux > -4)
+    {
+      String lux_esp = "#TYPE home_lux gauge\nhome_lux " + String(data.lux) + "\n";
+      String temp_esp = "#TYPE home_temp gauge\nhome_temp " + String(data.temperature) + "\n";
+      String hum_esp = "#TYPE home_hum gauge\nhome_hum " + String(data.humidity) + "\n";
+
+      data = {-5, -5, -5, 1};
+
+      body = body + lux_esp + temp_esp + hum_esp;
+    }
 
     http.begin(endpoint.c_str());
 
