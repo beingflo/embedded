@@ -3,19 +3,26 @@
 #include <esp_now.h>
 #include <WiFi.h>
 #include <esp_wifi.h>
+#include "DHT20.h"
 
-uint8_t receiver[] = {0x24, 0x4C, 0xAB, 0x82, 0xF5, 0x0C};
+uint8_t receiver[] = {0x08, 0x3A, 0xF2, 0x14, 0x2A, 0x88};
 
 esp_now_peer_info_t peerInfo;
 
 BH1750 lightMeter;
+DHT20 DHT;
+
 int success = 0;
 
-float measurement = 0;
+float lux = 0;
+float temperature = 0;
+float humidity = 0;
 
 struct msg_data
 {
-  float measurement;
+  float lux;
+  float temperature;
+  float humidity;
   int num_tries;
 };
 
@@ -54,26 +61,35 @@ void configure_esp_now()
   }
 }
 
-void configure_lightmeter()
+void configure_sensors()
 {
+  Serial.println("Configuring sensors");
   Wire.begin();
 
+  DHT.begin(D4, D5);
   lightMeter.begin(BH1750::ONE_TIME_HIGH_RES_MODE);
 }
 
-void take_measurement()
+void take_measurements()
 {
+  Serial.println("Taking measurements");
+
   while (!lightMeter.measurementReady(true))
   {
     yield();
   }
 
-  float lux = lightMeter.readLightLevel();
+  lux = lightMeter.readLightLevel();
   Serial.print("Light: ");
-  Serial.print(lux);
-  Serial.println(" lux");
+  Serial.println(lux);
 
-  measurement = lux;
+  Serial.println(DHT.read());
+  Serial.print("Humidity: ");
+  humidity = DHT.getHumidity();
+  Serial.println(humidity, 1);
+  Serial.print("Temperature: ");
+  temperature = DHT.getTemperature();
+  Serial.println(temperature, 1);
 
   lightMeter.configure(BH1750::ONE_TIME_HIGH_RES_MODE);
 }
@@ -98,7 +114,7 @@ void transmit_data()
     {
       send_tries += 1;
 
-      struct msg_data data = {measurement, num_tries};
+      struct msg_data data = {lux, temperature, humidity, num_tries};
 
       result = esp_now_send(receiver, (uint8_t *)&data, sizeof(msg_data));
 
@@ -135,15 +151,15 @@ void setup()
 
   configure_esp_now();
 
-  configure_lightmeter();
+  configure_sensors();
 }
 
 void loop()
 {
-  take_measurement();
+  take_measurements();
 
   transmit_data();
 
-  esp_sleep_enable_timer_wakeup(1000000);
+  esp_sleep_enable_timer_wakeup(30000000);
   esp_light_sleep_start();
 }
