@@ -11,9 +11,11 @@ esp_now_peer_info_t peerInfo;
 BH1750 lightMeter;
 int success = 0;
 
+float measurement = 0;
+
 struct msg_data
 {
-  float lux;
+  float measurement;
   int num_tries;
 };
 
@@ -25,16 +27,9 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status)
   }
 }
 
-void setup()
+void configure_esp_now()
 {
-  Serial.begin(115200);
-  Serial.setTxTimeoutMs(0);
-
   WiFi.mode(WIFI_STA);
-
-  Wire.begin();
-
-  lightMeter.begin(BH1750::ONE_TIME_HIGH_RES_MODE);
 
   if (esp_now_init() != ESP_OK)
   {
@@ -59,10 +54,15 @@ void setup()
   }
 }
 
-void loop()
+void configure_lightmeter()
 {
-  esp_wifi_start();
+  Wire.begin();
 
+  lightMeter.begin(BH1750::ONE_TIME_HIGH_RES_MODE);
+}
+
+void take_measurement()
+{
   while (!lightMeter.measurementReady(true))
   {
     yield();
@@ -71,9 +71,17 @@ void loop()
   float lux = lightMeter.readLightLevel();
   Serial.print("Light: ");
   Serial.print(lux);
-  Serial.println(" lx");
+  Serial.println(" lux");
+
+  measurement = lux;
 
   lightMeter.configure(BH1750::ONE_TIME_HIGH_RES_MODE);
+}
+
+void transmit_data()
+{
+  esp_wifi_start();
+  WiFi.mode(WIFI_STA);
 
   int num_tries = 0;
 
@@ -90,7 +98,7 @@ void loop()
     {
       send_tries += 1;
 
-      struct msg_data data = {lux, num_tries};
+      struct msg_data data = {measurement, num_tries};
 
       result = esp_now_send(receiver, (uint8_t *)&data, sizeof(msg_data));
 
@@ -118,7 +126,24 @@ void loop()
   success = 0;
 
   esp_wifi_stop();
-  esp_sleep_enable_timer_wakeup(1);
+}
 
+void setup()
+{
+  Serial.begin(115200);
+  Serial.setTxTimeoutMs(0);
+
+  configure_esp_now();
+
+  configure_lightmeter();
+}
+
+void loop()
+{
+  take_measurement();
+
+  transmit_data();
+
+  esp_sleep_enable_timer_wakeup(1000000);
   esp_light_sleep_start();
 }
