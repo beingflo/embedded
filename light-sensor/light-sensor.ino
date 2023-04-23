@@ -161,5 +161,5 @@ void loop()
   transmit_data();
 
   esp_sleep_enable_timer_wakeup(30000000);
-  esp_light_sleep_start();
+  esp_deep_sleep_start();
 }
