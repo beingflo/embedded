@@ -83,6 +83,7 @@ void take_measurements()
   Serial.print("Light: ");
   Serial.println(lux);
 
+  DHT.resetSensor();
   Serial.println(DHT.read());
   Serial.print("Humidity: ");
   humidity = DHT.getHumidity();
@@ -149,8 +150,9 @@ void setup()
   Serial.begin(115200);
   Serial.setTxTimeoutMs(0);
 
-  configure_esp_now();
+  delay(1000);
 
+  configure_esp_now();
   configure_sensors();
 }
 
