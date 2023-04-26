@@ -17,12 +17,14 @@ int success = 0;
 float lux = 0;
 float temperature = 0;
 float humidity = 0;
+float vBat = 0;
 
 struct msg_data
 {
   float lux;
   float temperature;
   float humidity;
+  float vBat;
   int num_tries;
 };
 
@@ -73,6 +75,7 @@ void configure_sensors()
 void take_measurements()
 {
   Serial.println("Taking measurements");
+  DHT.setTempOffset(0.35);
 
   while (!lightMeter.measurementReady(true))
   {
@@ -115,7 +118,7 @@ void transmit_data()
     {
       send_tries += 1;
 
-      struct msg_data data = {lux, temperature, humidity, num_tries};
+      struct msg_data data = {lux, temperature, humidity, vBat, num_tries};
 
       result = esp_now_send(receiver, (uint8_t *)&data, sizeof(msg_data));
 
@@ -145,6 +148,24 @@ void transmit_data()
   esp_wifi_stop();
 }
 
+void read_battery_voltage()
+{
+  uint16_t raw;
+
+  int num = 5;
+  while (num > 0)
+  {
+    raw = analogRead(A0);
+    num--;
+  }
+
+  float voltage = ((float)raw / 4095) * 3.1 * 2;
+
+  Serial.println(voltage);
+
+  vBat = voltage;
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -159,6 +180,7 @@ void setup()
 void loop()
 {
   take_measurements();
+  read_battery_voltage();
 
   transmit_data();
 
