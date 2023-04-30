@@ -3,27 +3,23 @@
 #include <esp_now.h>
 #include <WiFi.h>
 #include <esp_wifi.h>
-#include "DHT20.h"
 
 uint8_t receiver[] = {0x08, 0x3A, 0xF2, 0x14, 0x2A, 0x88};
 
 esp_now_peer_info_t peerInfo;
 
 BH1750 lightMeter;
-DHT20 DHT;
 
 int success = 0;
 
 float lux = 0;
-float temperature = 0;
-float humidity = 0;
+int moisture = 0;
 float vBat = 0;
 
 struct msg_data
 {
   float lux;
-  float temperature;
-  float humidity;
+  int moisture;
   float vBat;
   int num_tries;
 };
@@ -68,32 +64,29 @@ void configure_sensors()
   Serial.println("Configuring sensors");
   Wire.begin();
 
-  DHT.begin(D4, D5);
   lightMeter.begin(BH1750::ONE_TIME_HIGH_RES_MODE);
 }
 
 void take_measurements()
 {
   Serial.println("Taking measurements");
-  DHT.setTempOffset(0.35);
 
   while (!lightMeter.measurementReady(true))
   {
     yield();
   }
 
+  // Power moisture meter with GPIO to save power in deep sleep
+  digitalWrite(D3, HIGH);
+  delay(100);
+  moisture = analogRead(A2);
+  digitalWrite(D3, LOW);
+  Serial.print("Moisture: ");
+  Serial.println(moisture);
+
   lux = lightMeter.readLightLevel();
   Serial.print("Light: ");
   Serial.println(lux);
-
-  DHT.resetSensor();
-  Serial.println(DHT.read());
-  Serial.print("Humidity: ");
-  humidity = DHT.getHumidity();
-  Serial.println(humidity, 1);
-  Serial.print("Temperature: ");
-  temperature = DHT.getTemperature();
-  Serial.println(temperature, 1);
 
   lightMeter.configure(BH1750::ONE_TIME_HIGH_RES_MODE);
 }
@@ -118,7 +111,7 @@ void transmit_data()
     {
       send_tries += 1;
 
-      struct msg_data data = {lux, temperature, humidity, vBat, num_tries};
+      struct msg_data data = {lux, moisture, vBat, num_tries};
 
       result = esp_now_send(receiver, (uint8_t *)&data, sizeof(msg_data));
 
@@ -171,7 +164,7 @@ void setup()
   Serial.begin(115200);
   Serial.setTxTimeoutMs(0);
 
-  delay(1000);
+  pinMode(D3, OUTPUT);
 
   configure_esp_now();
   configure_sensors();

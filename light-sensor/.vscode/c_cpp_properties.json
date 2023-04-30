@@ -218,7 +218,6 @@
                 "/Users/florian/Library/Arduino15/packages/esp32/hardware/esp32/2.0.7/libraries/Wire/src",
                 "/Users/florian/Documents/Arduino/libraries/BH1750/src",
                 "/Users/florian/Library/Arduino15/packages/esp32/hardware/esp32/2.0.7/libraries/WiFi/src",
-                "/Users/florian/Documents/Arduino/libraries/DHT20",
                 "/Users/florian/Library/Arduino15/packages/esp32/tools/riscv32-esp-elf-gcc/esp-2021r2-patch5-8.4.0/riscv32-esp-elf/include/c++/8.4.0",
                 "/Users/florian/Library/Arduino15/packages/esp32/tools/riscv32-esp-elf-gcc/esp-2021r2-patch5-8.4.0/riscv32-esp-elf/include/c++/8.4.0/riscv32-esp-elf",
                 "/Users/florian/Library/Arduino15/packages/esp32/tools/riscv32-esp-elf-gcc/esp-2021r2-patch5-8.4.0/riscv32-esp-elf/include/c++/8.4.0/backward",
