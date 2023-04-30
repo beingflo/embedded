@@ -21,20 +21,19 @@ TM1637 tm(CLK, DIO);
 struct msg_data
 {
   float lux;
-  float temperature;
-  float humidity;
+  int moisture;
   float vBat;
   int num_tries;
 };
 
-struct msg_data data = {-5, -5, -5, -5, 0};
+struct msg_data data = {-5, -5, -5, 0};
 
 // callback function that will be executed when data is received
 void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
 {
   memcpy(&data, incomingData, sizeof(msg_data));
 
-  Serial.printf("lux: %f, temperature: %f, humidity: %f, vBat: %f, retries: %d\n", data.lux, data.temperature, data.humidity, data.vBat, data.num_tries);
+  Serial.printf("lux: %f, moisture: %d, vBat: %f, retries: %d\n", data.lux, data.moisture, data.vBat, data.num_tries);
 }
 
 void connectWifi()
@@ -133,13 +132,12 @@ void loop()
     if (data.lux > -4)
     {
       String lux_esp = "#TYPE home_lux gauge\nhome_lux " + String(data.lux) + "\n";
-      String temp_esp = "#TYPE home_temp gauge\nhome_temp " + String(data.temperature) + "\n";
-      String hum_esp = "#TYPE home_hum gauge\nhome_hum " + String(data.humidity) + "\n";
+      String moisture_esp = "#TYPE home_moisture gauge\nhome_moisture " + String(data.moisture) + "\n";
       String vBat_esp = "#TYPE home_vBat gauge\nhome_vBat " + String(data.vBat) + "\n";
 
-      data = {-5, -5, -5, -5, 1};
+      data = {-5, -5, -5, 1};
 
-      body = body + lux_esp + temp_esp + hum_esp + vBat_esp;
+      body = body + lux_esp + moisture_esp + vBat_esp;
     }
 
     http.begin(endpoint.c_str());
