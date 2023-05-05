@@ -2,5 +2,5 @@
     "sketch": "co2-sensor.ino",
     "configuration": "PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,LoopCore=1,EventsCore=1,DebugLevel=none",
     "board": "DFRobot:esp32:esp32-e",
-    "port": "/dev/tty.wchusbserial10"
+    "port": "/dev/tty.wchusbserial110"
 }
